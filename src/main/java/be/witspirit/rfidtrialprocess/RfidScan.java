@@ -1,6 +1,8 @@
 package be.witspirit.rfidtrialprocess;
 
-import java.time.Instant;
+import org.apache.commons.codec.binary.Hex;
+
+import java.time.LocalTime;
 
 /**
  * Represents an individual RFID Scan line
@@ -13,7 +15,7 @@ public class RfidScan {
 
     private byte[] uid;
 
-    private Instant timestamp;
+    private LocalTime timestamp;
 
     private int antennaNr;
 
@@ -41,11 +43,11 @@ public class RfidScan {
         this.uid = uid;
     }
 
-    public Instant getTimestamp() {
+    public LocalTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Instant timestamp) {
+    public void setTimestamp(LocalTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -55,5 +57,10 @@ public class RfidScan {
 
     public void setAntennaNr(int antennaNr) {
         this.antennaNr = antennaNr;
+    }
+
+    @Override
+    public String toString() {
+        return "Scan "+nr+":"+transponderType+":"+ Hex.encodeHexString(uid)+":"+timestamp+":"+antennaNr;
     }
 }

@@ -1,5 +1,6 @@
 package be.witspirit.rfidtrialprocess;
 
+import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ParseInputTest {
 
     @Test
-    public void readSample() throws IOException {
+    public void readSample() throws IOException, DecoderException {
         ParseInput parser = new ParseInput();
         try (InputStream sampleStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("BRMLOG_D2015-22-06_T104026.csv")) {
             List<RfidScan> scans = parser.readFrom(sampleStream);
