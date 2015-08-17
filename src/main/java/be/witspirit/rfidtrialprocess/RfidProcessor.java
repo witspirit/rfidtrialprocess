@@ -3,7 +3,6 @@ package be.witspirit.rfidtrialprocess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,12 +19,12 @@ import java.util.function.Predicate;
 public class RfidProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(RfidProcessor.class);
 
-    private final File inputDir;
-    private final File outputDir;
+    private final Path inputDir;
+    private final Path outputDir;
 
     private List<HandlerRegistration> handlers = new ArrayList<>();
 
-    public RfidProcessor(File inputDir, File outputDir) {
+    public RfidProcessor(Path inputDir, Path outputDir) {
         this.inputDir = inputDir;
         this.outputDir = outputDir;
     }
@@ -37,7 +36,7 @@ public class RfidProcessor {
     public void listenForEvents() {
         try {
             WatchService watcher = FileSystems.getDefault().newWatchService();
-            WatchKey watchKey = inputDir.toPath().register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
+            WatchKey watchKey = inputDir.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
 
             LOG.info("File system watch started on "+inputDir+"...");
             while (watchKey.isValid()) {
@@ -77,7 +76,7 @@ public class RfidProcessor {
 
     public void processInputDir() {
         try {
-            Files.list(inputDir.toPath()).forEach(this::process);
+            Files.list(inputDir).forEach(this::process);
         } catch (IOException e) {
             throw new RuntimeException("Failed to list files from input directory.");
         }
@@ -94,9 +93,9 @@ public class RfidProcessor {
 
     private void produceOutput(Path filePath, TosTransformer transformer) {
         try {
-            List<RfidScan> scans = new RfidInputParser().readFrom(new FileReader(new File(inputDir, filePath.toString())));
+            List<RfidScan> scans = new RfidInputParser().readFrom(new FileReader(inputDir.resolve(filePath).toFile()));
             List<TosInstruction> instructions = transformer.toTos(scans);
-            new TosOutputProducer().write(instructions, new FileWriter(new File(outputDir, filePath.toString()+"_INSTRUCTIONS.txt")));
+            new TosOutputProducer().write(instructions, new FileWriter(outputDir.resolve(filePath.toString()+"_INSTRUCTIONS.txt").toFile()));
         } catch (Exception e) {
             // TODO Should be cleaner/more explicit...
             throw new RuntimeException("Something went wrong producing the output", e);

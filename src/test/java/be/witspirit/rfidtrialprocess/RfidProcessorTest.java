@@ -31,7 +31,7 @@ public class RfidProcessorTest {
         deleteDir(output);
         output = Files.createDirectories(output);
 
-        RfidProcessor processor = new RfidProcessor(input.toFile(), output.toFile());
+        RfidProcessor processor = new RfidProcessor(input, output);
         processor.handle(fileName -> fileName.startsWith("ARR"), new TosTransformer(TrialInstructions.ARRIVAL));
         processor.handle(fileName -> fileName.startsWith("WASH"), new TosTransformer(TrialInstructions.VPC_DONE));
         processor.handle(fileName -> fileName.startsWith("DEP"), new TosTransformer(TrialInstructions.DEPARTURE));
@@ -98,7 +98,7 @@ public class RfidProcessorTest {
         Files.copy(rfidSample, input.resolve("DEP_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("Unhandled_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
 
-        RfidProcessor processor = new RfidProcessor(input.toFile(), output.toFile());
+        RfidProcessor processor = new RfidProcessor(input, output);
         processor.handle(fileName -> fileName.startsWith("ARR"), new TosTransformer(TrialInstructions.ARRIVAL));
         processor.handle(fileName -> fileName.startsWith("WASH"), new TosTransformer(TrialInstructions.VPC_DONE));
         processor.handle(fileName -> fileName.startsWith("DEP"), new TosTransformer(TrialInstructions.DEPARTURE));
