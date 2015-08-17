@@ -75,10 +75,20 @@ public class RfidProcessor {
 
     }
 
-    private void process(Path filePath) {
-        LOG.info("Processing "+filePath);
+    public void processInputDir() {
+        try {
+            Files.list(inputDir.toPath()).forEach(this::process);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to list files from input directory.");
+        }
 
-        selectTransformer(filePath).ifPresent(transformer -> produceOutput(filePath, transformer));
+    }
+
+    private void process(Path filePath) {
+        Path fileName = filePath.getFileName();
+        LOG.info("Processing "+fileName);
+
+        selectTransformer(fileName).ifPresent(transformer -> produceOutput(fileName, transformer));
 
     }
 
