@@ -11,3 +11,7 @@ gradle-app.setting
 .idea
 *.iml
 
+# Private only files, containing local configuration
+test.private.properties
+
+
