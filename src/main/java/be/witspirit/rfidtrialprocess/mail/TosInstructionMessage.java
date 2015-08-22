@@ -1,8 +1,5 @@
 package be.witspirit.rfidtrialprocess.mail;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -11,6 +8,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
@@ -43,9 +41,13 @@ public class TosInstructionMessage implements MailMessage {
             text.setContent(messageContent, "text/plain");
 
             MimeBodyPart fileAttachment = new MimeBodyPart();
-            DataSource source = new FileDataSource(filename.toFile());
-            fileAttachment.setDataHandler(new DataHandler(source));
-            fileAttachment.setFileName(filename.getFileName().toString());
+            // New JavaMail 1.4 style
+            fileAttachment.attachFile(filename.toFile());
+
+            // Old JavaMail < 1.4 style
+//            DataSource source = new FileDataSource(filename.toFile());
+//            fileAttachment.setDataHandler(new DataHandler(source));
+//            fileAttachment.setFileName(filename.getFileName().toString());
 
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(text);
@@ -54,7 +56,7 @@ public class TosInstructionMessage implements MailMessage {
             message.setContent(multipart);
 
             return message;
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             throw new MailDeliveryException("Failed to construct mail message", e);
         }
     }
