@@ -92,7 +92,8 @@ public class RfidProcessorTest {
         deleteDir(output);
         output = Files.createDirectories(output);
 
-        Path rfidSample = Paths.get("src", "test", "resources", "BRMLog_D2015-22-06_T104026.csv");
+        // Path rfidSample = Paths.get("src", "test", "resources", "BRMLog_D2015-22-06_T104026.csv");
+        Path rfidSample = Paths.get("src", "test", "resources", "mazdaLikeSample.csv");
         Files.copy(rfidSample, input.resolve("ARR_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("WASH_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("DEP_sample.csv"), StandardCopyOption.REPLACE_EXISTING);

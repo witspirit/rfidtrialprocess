@@ -6,6 +6,6 @@ package be.witspirit.rfidtrialprocess;
 public interface TrialInstructions {
 
     String ARRIVAL = "PositionScan, vin %s, position AF1001, slot 1";
-    String VPC_DONE = "%s";
+    String VPC_DONE = "PDI_Done, vin %s";
     String DEPARTURE = "LoadScan, vin %s, visit STOBART_ZBRRFIDTEST";
 }

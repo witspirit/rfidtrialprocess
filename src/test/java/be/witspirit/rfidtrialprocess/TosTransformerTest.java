@@ -1,10 +1,8 @@
 package be.witspirit.rfidtrialprocess;
 
+import be.witspirit.rfidtrialprocess.tools.ScanGenerator;
 import org.junit.Test;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,7 +43,7 @@ public class TosTransformerTest {
         assertThat(instructions.size(), is(1));
 
         TosInstruction instruction = instructions.get(0);
-        assertThat(instruction.output(), is("VIN01234567890V01"));
+        assertThat(instruction.output(), is("PDI_Done, vin VIN01234567890V01"));
     }
 
     @Test
@@ -61,19 +59,6 @@ public class TosTransformerTest {
 
 
     private List<RfidScan> scans(String... vins) {
-        List<RfidScan> scans = new ArrayList<>();
-        int counter = 1;
-        for (String vin : vins) {
-            RfidScan scan = new RfidScan();
-            scan.setNr(counter++);
-            scan.setTransponderType(132);
-            scan.setUid(vin.getBytes(StandardCharsets.US_ASCII));
-            scan.setTimestamp(LocalTime.now());
-            scan.setAntennaNr(1);
-
-            scans.add(scan);
-        }
-
-        return scans;
+        return ScanGenerator.scans(vins);
     }
 }
