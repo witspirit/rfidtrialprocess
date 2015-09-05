@@ -93,9 +93,11 @@ public class RfidProcessor {
 
     private void produceOutput(Path filePath, TosTransformer transformer) {
         try {
-            List<RfidScan> scans = new RfidInputParser().readFrom(new FileReader(inputDir.resolve(filePath).toFile()));
+            Path inputFilePath = inputDir.resolve(filePath);
+            List<RfidScan> scans = new RfidInputParser().readFrom(new FileReader(inputFilePath.toFile()));
             List<TosInstruction> instructions = transformer.toTos(scans);
-            new TosOutputProducer().write(instructions, new FileWriter(outputDir.resolve(filePath.toString()+"_INSTRUCTIONS.txt").toFile()));
+            Path outputFilePath = outputDir.resolve(filePath.toString() + "_INSTRUCTIONS.txt");
+            new TosOutputProducer().write(instructions, new FileWriter(outputFilePath.toFile()));
         } catch (Exception e) {
             // TODO Should be cleaner/more explicit...
             throw new RuntimeException("Something went wrong producing the output", e);
