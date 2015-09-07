@@ -88,7 +88,7 @@ public class RfidProcessorTest {
     public void directoryScan() throws IOException {
         Path input = Files.createDirectories(rootDir.resolve("scanInput"));
 
-        Path output = rootDir.resolve("scanOutout");
+        Path output = rootDir.resolve("scanOutput");
         deleteDir(output);
         output = Files.createDirectories(output);
 

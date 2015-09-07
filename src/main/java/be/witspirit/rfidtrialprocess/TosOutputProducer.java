@@ -5,14 +5,17 @@ import java.io.Writer;
 import java.util.List;
 
 /**
- * Writes TOS Instructions to a destination writer
+ * Writes TOS Instructions to a destination writer.
+ * Since the TOS application is a Windows application, we assume Windows Line Separators.
  */
 public class TosOutputProducer {
+
+    public static final String WINDOWS_LINE_SEPARATOR = "\r\n";
 
     public void write(List<TosInstruction> instructions, Writer destination) {
         try {
             for (TosInstruction instruction : instructions) {
-                destination.write(instruction.output() + "\n");
+                destination.write(instruction.output() + WINDOWS_LINE_SEPARATOR);
             }
             destination.flush();
         } catch (IOException e) {
