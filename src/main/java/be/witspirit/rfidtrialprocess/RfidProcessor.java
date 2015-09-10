@@ -3,9 +3,7 @@ package be.witspirit.rfidtrialprocess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +90,9 @@ public class RfidProcessor {
     }
 
     private void produceOutput(Path filePath, TosTransformer transformer) {
-        try {
-            Path inputFilePath = inputDir.resolve(filePath);
-            List<RfidScan> scans = new RfidInputParser().readFrom(new FileReader(inputFilePath.toFile()));
+        Path inputFilePath = inputDir.resolve(filePath);
+        try (FileReader inputReader = openReader(inputFilePath)){
+            List<RfidScan> scans = new RfidInputParser().readFrom(inputReader);
             List<TosInstruction> instructions = transformer.toTos(scans);
             Path outputFilePath = outputDir.resolve(filePath.toString() + "_INSTRUCTIONS.txt");
             new TosOutputProducer().write(instructions, new FileWriter(outputFilePath.toFile()));
@@ -103,6 +101,25 @@ public class RfidProcessor {
             throw new RuntimeException("Something went wrong producing the output", e);
         }
 
+    }
+
+    private FileReader openReader(Path inputFilePath) throws FileNotFoundException {
+        File file = inputFilePath.toFile();
+        for (int i=0; i < 3; i++) {
+            try {
+                return new FileReader(file);
+            } catch (FileNotFoundException fnf) {
+                // Might be concurrent access... Back off and try again
+                LOG.debug("Received "+fnf.getMessage()+". Sleeping for a while and retrying "+file+" ...");
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    LOG.warn("Sleep got interrupted", e);
+                }
+            }
+        }
+        LOG.debug("Final attempt at reading "+file);
+        return new FileReader(file);
     }
 
     private Optional<TosTransformer> selectTransformer(Path filePath) {
