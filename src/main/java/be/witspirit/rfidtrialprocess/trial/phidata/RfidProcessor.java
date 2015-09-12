@@ -1,5 +1,6 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
+import be.witspirit.rfidtrialprocess.file.FileProcessor;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
@@ -28,9 +29,14 @@ public class RfidProcessor {
 
     private List<HandlerRegistration> handlers = new ArrayList<>();
 
+    private FileProcessor fileProcessor;
+
     public RfidProcessor(Path inputDir, Path outputDir) {
         this.inputDir = inputDir;
         this.outputDir = outputDir;
+
+        this.fileProcessor = new FileProcessor(inputDir);
+        this.fileProcessor.register(this::process);
     }
 
     public void handle(Predicate<String> fileNameFilter, TosTransformer tosTransformer) {
@@ -38,53 +44,11 @@ public class RfidProcessor {
     }
 
     public void listenForEvents() {
-        try {
-            WatchService watcher = FileSystems.getDefault().newWatchService();
-            WatchKey watchKey = inputDir.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
-
-            LOG.info("File system watch started on "+inputDir+"...");
-            while (watchKey.isValid()) {
-                try {
-                    watchKey = watcher.take();
-                } catch (InterruptedException e) {
-                    LOG.info("File system watch was interrupted. Aborting file system watch...", e);
-                    return;
-                }
-
-                for (WatchEvent<?> event : watchKey.pollEvents()) {
-                    WatchEvent.Kind<?> eventKind = event.kind();
-
-                    if (eventKind == StandardWatchEventKinds.OVERFLOW) {
-                        LOG.warn("Event Overflow reported. Possible events missed !");
-                    } else {
-                        // Proper event
-                        WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
-                        Path filePath = pathEvent.context();
-                        LOG.info(eventKind+" event detected for "+filePath);
-
-                        process(filePath);
-                    }
-                }
-
-                watchKey.reset();
-            }
-
-            LOG.info("File system watch ended as "+inputDir+" became unavailable.");
-
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to observe the filesystem using a WatchService", e);
-        }
-
+        fileProcessor.startWatch();
     }
 
     public void processInputDir() {
-        try {
-            Files.list(inputDir).forEach(this::process);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to list files from input directory.");
-        }
-
+        this.fileProcessor.scan();
     }
 
     private void process(Path filePath) {
@@ -92,7 +56,6 @@ public class RfidProcessor {
         LOG.info("Processing "+fileName);
 
         selectTransformer(fileName).ifPresent(transformer -> produceOutput(fileName, transformer));
-
     }
 
     private void produceOutput(Path filePath, TosTransformer transformer) {
