@@ -1,6 +1,6 @@
 package be.witspirit.rfidtrialprocess.tools.phidata;
 
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class ScanGenerator {
 
-    public static List<RfidScan> scans(String... vins) {
-        List<RfidScan> scans = new ArrayList<>();
+    public static List<PhiDataRfidScan> scans(String... vins) {
+        List<PhiDataRfidScan> scans = new ArrayList<>();
         int counter = 1;
         for (String vin : vins) {
-            RfidScan scan = new RfidScan();
+            PhiDataRfidScan scan = new PhiDataRfidScan();
             scan.setNr(counter++);
             scan.setTransponderType(132);
             scan.setUid(vin.getBytes(StandardCharsets.US_ASCII));

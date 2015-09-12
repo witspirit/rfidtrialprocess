@@ -15,16 +15,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Unit test for ParseInput
  */
-public class RfidInputParserTest {
+public class PhiDataRfidInputParserTest {
 
     @Test
     public void readSample() throws IOException {
-        RfidInputParser parser = new RfidInputParser();
+        PhiDataRfidInputParser parser = new PhiDataRfidInputParser();
         try (
                 InputStream sampleStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("phidata/BRMLog_D2015-22-06_T104026.csv");
                 Reader sampleReader = new InputStreamReader(sampleStream);
         ) {
-            List<RfidScan> scans = parser.readFrom(sampleReader);
+            List<PhiDataRfidScan> scans = parser.readFrom(sampleReader);
 
 
             assertThat(scans.size(), is(409));
@@ -32,7 +32,7 @@ public class RfidInputParserTest {
             // Check the first and last sample
 
             // First = 25;0x84;303030303030313338363834;10:40:45.900;1;
-            RfidScan firstScan = scans.get(0);
+            PhiDataRfidScan firstScan = scans.get(0);
 
             assertThat(firstScan.getNr(), is(25));
             assertThat(firstScan.getTransponderType(), is(0x84));
@@ -41,7 +41,7 @@ public class RfidInputParserTest {
             assertThat(firstScan.getAntennaNr(), is(1));
 
             // Last = 433;0x84;E2002067560F00980240F0E4;10:41:05.050;1;
-            RfidScan lastScan = scans.get(scans.size()-1);
+            PhiDataRfidScan lastScan = scans.get(scans.size()-1);
 
             assertThat(lastScan.getNr(), is(433));
             assertThat(lastScan.getTransponderType(), is(0x84));

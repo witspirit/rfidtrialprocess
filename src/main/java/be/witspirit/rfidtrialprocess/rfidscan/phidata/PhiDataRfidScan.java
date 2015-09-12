@@ -7,7 +7,7 @@ import java.time.LocalTime;
 /**
  * Represents an individual RFID Scan line
  */
-public class RfidScan {
+public class PhiDataRfidScan {
 
     private int nr;
 

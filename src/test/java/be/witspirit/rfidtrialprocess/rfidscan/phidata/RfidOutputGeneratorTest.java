@@ -18,7 +18,7 @@ public class RfidOutputGeneratorTest {
     @Test
     public void mazdaLikeSample() throws IOException {
         // Some VINs selected from DSR Checklists to have some real-life VINs
-        List<RfidScan> sampleScans = ScanGenerator.scans(
+        List<PhiDataRfidScan> sampleScans = ScanGenerator.scans(
                 "JMZCR19F260100442",
                 "JMZBK14Z201587911",
                 "JMZDE13K200105949",

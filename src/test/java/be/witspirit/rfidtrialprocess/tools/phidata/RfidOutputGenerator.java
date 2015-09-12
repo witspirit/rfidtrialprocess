@@ -1,7 +1,7 @@
 package be.witspirit.rfidtrialprocess.tools.phidata;
 
 import be.witspirit.rfidtrialprocess.exceptions.InputException;
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -17,10 +17,10 @@ public class RfidOutputGenerator {
 
     // private static final Logger LOG = LoggerFactory.getLogger(RfidOutputGenerator.class);
 
-    public static void writeTo(Writer writer, List<RfidScan> scans) {
+    public static void writeTo(Writer writer, List<PhiDataRfidScan> scans) {
         try (CSVPrinter printer = CSVFormat.DEFAULT.withDelimiter(';').withHeader("No", "TrType", "UID", "Time", "AntNo").print(writer)) {
 
-            for (RfidScan scan : scans) {
+            for (PhiDataRfidScan scan : scans) {
                 int no = scan.getNr();
                 String trType = "0x" + Integer.toHexString(scan.getTransponderType());
                 String uid = Hex.encodeHexString(scan.getUid());

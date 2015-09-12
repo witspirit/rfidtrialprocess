@@ -1,6 +1,6 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
@@ -22,9 +22,9 @@ public class TosTransformer {
         this.tosPattern = tosPattern;
     }
 
-    public List<TosInstruction> toTos(List<RfidScan> scans) {
+    public List<TosInstruction> toTos(List<PhiDataRfidScan> scans) {
         List<TosInstruction> instructions = new ArrayList<>();
-        for (RfidScan scan : scans) {
+        for (PhiDataRfidScan scan : scans) {
             byte[] uid = scan.getUid();
 
             try {

@@ -1,7 +1,7 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidInputParser;
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
 import be.witspirit.rfidtrialprocess.tos.TrialInstructions;
@@ -38,7 +38,7 @@ public class TransformationTest {
 
     private void process(String inputFileName, String instructionPattern, String outputFileName) {
         try {
-            List<RfidScan> scans = new RfidInputParser().readFrom(new FileReader(inputFileName));
+            List<PhiDataRfidScan> scans = new PhiDataRfidInputParser().readFrom(new FileReader(inputFileName));
             List<TosInstruction> instructions = new TosTransformer(instructionPattern).toTos(scans);
             new TosOutputProducer().write(instructions, new FileWriter(outputFileName));
         } catch (Exception e) {

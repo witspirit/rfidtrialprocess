@@ -1,7 +1,7 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidInputParser;
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class RfidProcessor {
     private void produceOutput(Path filePath, TosTransformer transformer) {
         Path inputFilePath = inputDir.resolve(filePath);
         try (FileReader inputReader = openReader(inputFilePath)){
-            List<RfidScan> scans = new RfidInputParser().readFrom(inputReader);
+            List<PhiDataRfidScan> scans = new PhiDataRfidInputParser().readFrom(inputReader);
             List<TosInstruction> instructions = transformer.toTos(scans);
             Path outputFilePath = outputDir.resolve(filePath.toString() + "_INSTRUCTIONS.txt");
             new TosOutputProducer().write(instructions, new FileWriter(outputFilePath.toFile()));

@@ -18,17 +18,17 @@ import java.util.List;
 /**
  * Reads the Input CSV
  */
-public class RfidInputParser {
+public class PhiDataRfidInputParser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RfidInputParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PhiDataRfidInputParser.class);
 
-    public List<RfidScan> readFrom(Reader reader) {
-        List<RfidScan> scans = new ArrayList<>();
+    public List<PhiDataRfidScan> readFrom(Reader reader) {
+        List<PhiDataRfidScan> scans = new ArrayList<>();
         try (CSVParser parser = CSVFormat.DEFAULT.withDelimiter(';').withHeader().parse(reader)) {
 
             for (CSVRecord record : parser.getRecords()) {
                 try {
-                    RfidScan scan = parseRecord(record);
+                    PhiDataRfidScan scan = parseRecord(record);
 
                     scans.add(scan);
                 } catch (Exception e) {
@@ -42,7 +42,7 @@ public class RfidInputParser {
         return scans;
     }
 
-    private RfidScan parseRecord(CSVRecord record) {
+    private PhiDataRfidScan parseRecord(CSVRecord record) {
         // Extract values
         String nr = record.get("No");
         String trType = record.get("TrType");
@@ -54,7 +54,7 @@ public class RfidInputParser {
 
 
         // Parse/Transform
-        RfidScan scan = new RfidScan();
+        PhiDataRfidScan scan = new PhiDataRfidScan();
 
         scan.setNr(Integer.parseInt(nr));
 

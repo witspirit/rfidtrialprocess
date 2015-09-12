@@ -1,6 +1,6 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tools.phidata.ScanGenerator;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import be.witspirit.rfidtrialprocess.tos.TrialInstructions;
@@ -18,7 +18,7 @@ public class TosTransformerTest {
 
     @Test
     public void sample() {
-        List<RfidScan> scans = scans("VIN01234567890V01", "VIN01234567890V02", "VIN01234567890V03");
+        List<PhiDataRfidScan> scans = scans("VIN01234567890V01", "VIN01234567890V02", "VIN01234567890V03");
 
         TosTransformer tosTransformer = new TosTransformer("Dummy Instruction, vin %s, some more, data");
         List<TosInstruction> instructions = tosTransformer.toTos(scans);
@@ -61,7 +61,7 @@ public class TosTransformerTest {
 
 
 
-    private List<RfidScan> scans(String... vins) {
+    private List<PhiDataRfidScan> scans(String... vins) {
         return ScanGenerator.scans(vins);
     }
 }
