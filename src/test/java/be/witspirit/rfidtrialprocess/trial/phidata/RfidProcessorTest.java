@@ -1,7 +1,9 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
+import be.witspirit.rfidtrialprocess.file.PathFilters;
 import be.witspirit.rfidtrialprocess.output.tos.TosWriter;
 import be.witspirit.rfidtrialprocess.output.tos.TrialInstructions;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,6 +24,14 @@ public class RfidProcessorTest {
 
     private static final Path rootDir = Paths.get("build", "processortest");
 
+    private RfidProcessor configureRfidProcessor(Path input, Path output) {
+        RfidProcessor processor = new RfidProcessor(input, output);
+        processor.handle(PathFilters.fileNameStartsWith("ARR"), new PhiDataRfidInputParser(), new TosWriter(TrialInstructions.ARRIVAL));
+        processor.handle(PathFilters.fileNameStartsWith("WASH"), new PhiDataRfidInputParser(), new TosWriter(TrialInstructions.VPC_DONE));
+        processor.handle(PathFilters.fileNameStartsWith("DEP"), new PhiDataRfidInputParser(), new TosWriter(TrialInstructions.DEPARTURE));
+        return processor;
+    }
+
     @Test
     public void fullSetup() throws IOException, ExecutionException, InterruptedException {
         // Ensure we start clean
@@ -33,10 +43,7 @@ public class RfidProcessorTest {
         deleteDir(output);
         output = Files.createDirectories(output);
 
-        RfidProcessor processor = new RfidProcessor(input, output);
-        processor.handle(fileName -> fileName.startsWith("ARR"), new TosWriter(TrialInstructions.ARRIVAL));
-        processor.handle(fileName -> fileName.startsWith("WASH"), new TosWriter(TrialInstructions.VPC_DONE));
-        processor.handle(fileName -> fileName.startsWith("DEP"), new TosWriter(TrialInstructions.DEPARTURE));
+        RfidProcessor processor = configureRfidProcessor(input, output);
 
         Future<?> listener = Executors.newSingleThreadExecutor().submit(processor::listenForEvents);
         LOG.debug("Submitted listenForEvents");
@@ -101,10 +108,7 @@ public class RfidProcessorTest {
         Files.copy(rfidSample, input.resolve("DEP_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("Unhandled_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
 
-        RfidProcessor processor = new RfidProcessor(input, output);
-        processor.handle(fileName -> fileName.startsWith("ARR"), new TosWriter(TrialInstructions.ARRIVAL));
-        processor.handle(fileName -> fileName.startsWith("WASH"), new TosWriter(TrialInstructions.VPC_DONE));
-        processor.handle(fileName -> fileName.startsWith("DEP"), new TosWriter(TrialInstructions.DEPARTURE));
+        RfidProcessor processor = configureRfidProcessor(input, output);
 
         processor.processInputDir();
 
