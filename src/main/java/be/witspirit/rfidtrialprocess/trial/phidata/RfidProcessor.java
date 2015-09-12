@@ -4,10 +4,12 @@ import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
+import be.witspirit.rfidtrialprocess.tos.TosTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,14 +99,17 @@ public class RfidProcessor {
         Path inputFilePath = inputDir.resolve(filePath);
         try (FileReader inputReader = openReader(inputFilePath)){
             List<PhiDataRfidScan> scans = new PhiDataRfidInputParser().readFrom(inputReader);
-            List<TosInstruction> instructions = transformer.toTos(scans);
+            List<TosInstruction> instructions = transformer.scansToTos(scans, RfidProcessor::phiDataVinExtractor);
             Path outputFilePath = outputDir.resolve(filePath.toString() + "_INSTRUCTIONS.txt");
             new TosOutputProducer().write(instructions, new FileWriter(outputFilePath.toFile()));
         } catch (Exception e) {
             // TODO Should be cleaner/more explicit...
             throw new RuntimeException("Something went wrong producing the output", e);
         }
+    }
 
+    public static String phiDataVinExtractor(PhiDataRfidScan scan) {
+        return new String(scan.getUid(), StandardCharsets.US_ASCII);
     }
 
     private FileReader openReader(Path inputFilePath) throws FileNotFoundException {

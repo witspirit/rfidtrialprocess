@@ -4,6 +4,7 @@ import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
+import be.witspirit.rfidtrialprocess.tos.TosTransformer;
 import be.witspirit.rfidtrialprocess.tos.TrialInstructions;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class TransformationTest {
     private void process(String inputFileName, String instructionPattern, String outputFileName) {
         try {
             List<PhiDataRfidScan> scans = new PhiDataRfidInputParser().readFrom(new FileReader(inputFileName));
-            List<TosInstruction> instructions = new TosTransformer(instructionPattern).toTos(scans);
+            List<TosInstruction> instructions = new TosTransformer(instructionPattern).scansToTos(scans, RfidProcessor::phiDataVinExtractor);
             new TosOutputProducer().write(instructions, new FileWriter(outputFileName));
         } catch (Exception e) {
             throw new RuntimeException("Conversion failed", e);

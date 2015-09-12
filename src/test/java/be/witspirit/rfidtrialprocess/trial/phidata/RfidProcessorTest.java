@@ -1,5 +1,6 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
+import be.witspirit.rfidtrialprocess.tos.TosTransformer;
 import be.witspirit.rfidtrialprocess.tos.TrialInstructions;
 import org.junit.Assert;
 import org.junit.Test;
