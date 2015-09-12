@@ -1,6 +1,7 @@
 package be.witspirit.rfidtrialprocess.rfidscan.phidata;
 
 import be.witspirit.rfidtrialprocess.exceptions.InputException;
+import be.witspirit.rfidtrialprocess.rfidscan.VinParser;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.csv.CSVFormat;
@@ -11,14 +12,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Reads the Input CSV
  */
-public class PhiDataRfidInputParser {
+public class PhiDataRfidInputParser implements VinParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(PhiDataRfidInputParser.class);
 
@@ -74,4 +77,14 @@ public class PhiDataRfidInputParser {
 
         return scan;
     }
+
+    @Override
+    public Stream<String> parse(Reader reader) {
+        return readFrom(reader).stream().map(this::phiDataVinExtractor);
+    }
+
+    private String phiDataVinExtractor(PhiDataRfidScan scan) {
+        return new String(scan.getUid(), StandardCharsets.US_ASCII);
+    }
+
 }

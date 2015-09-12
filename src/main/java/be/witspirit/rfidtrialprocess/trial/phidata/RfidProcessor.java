@@ -1,17 +1,16 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
+import be.witspirit.rfidtrialprocess.file.FileConverter;
+import be.witspirit.rfidtrialprocess.file.FileNameMappers;
 import be.witspirit.rfidtrialprocess.file.FileProcessor;
+import be.witspirit.rfidtrialprocess.rfidscan.VinParser;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
-import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
 import be.witspirit.rfidtrialprocess.tos.TosTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +29,7 @@ public class RfidProcessor {
     private List<HandlerRegistration> handlers = new ArrayList<>();
 
     private FileProcessor fileProcessor;
+    private VinParser vinParser;
 
     public RfidProcessor(Path inputDir, Path outputDir) {
         this.inputDir = inputDir;
@@ -37,6 +37,8 @@ public class RfidProcessor {
 
         this.fileProcessor = new FileProcessor(inputDir);
         this.fileProcessor.register(this::process);
+
+        this.vinParser = new PhiDataRfidInputParser();
     }
 
     public void handle(Predicate<String> fileNameFilter, TosTransformer tosTransformer) {
@@ -55,43 +57,15 @@ public class RfidProcessor {
         Path fileName = filePath.getFileName();
         LOG.info("Processing "+fileName);
 
-        selectTransformer(fileName).ifPresent(transformer -> produceOutput(fileName, transformer));
+        selectTransformer(fileName).ifPresent(transformer -> produceOutput(filePath, transformer));
     }
 
     private void produceOutput(Path filePath, TosTransformer transformer) {
-        Path inputFilePath = inputDir.resolve(filePath);
-        try (FileReader inputReader = openReader(inputFilePath)){
-            List<PhiDataRfidScan> scans = new PhiDataRfidInputParser().readFrom(inputReader);
-            List<TosInstruction> instructions = transformer.scansToTos(scans, RfidProcessor::phiDataVinExtractor);
-            Path outputFilePath = outputDir.resolve(filePath.toString() + "_INSTRUCTIONS.txt");
-            new TosOutputProducer().write(instructions, new FileWriter(outputFilePath.toFile()));
-        } catch (Exception e) {
-            // TODO Should be cleaner/more explicit...
-            throw new RuntimeException("Something went wrong producing the output", e);
-        }
-    }
-
-    public static String phiDataVinExtractor(PhiDataRfidScan scan) {
-        return new String(scan.getUid(), StandardCharsets.US_ASCII);
-    }
-
-    private FileReader openReader(Path inputFilePath) throws FileNotFoundException {
-        File file = inputFilePath.toFile();
-        for (int i=0; i < 3; i++) {
-            try {
-                return new FileReader(file);
-            } catch (FileNotFoundException fnf) {
-                // Might be concurrent access... Back off and try again
-                LOG.debug("Received "+fnf.getMessage()+". Sleeping for a while and retrying "+file+" ...");
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    LOG.warn("Sleep got interrupted", e);
-                }
-            }
-        }
-        LOG.debug("Final attempt at reading "+file);
-        return new FileReader(file);
+        new FileConverter<>(
+                vinParser::parse,
+                FileNameMappers.toDir(outputDir).andThen(FileNameMappers.suffix("_INSTRUCTIONS.txt")),
+                (vins, fileWriter) -> new TosOutputProducer().write(transformer.vinsToTos(vins), fileWriter)
+                ).accept(filePath);
     }
 
     private Optional<TosTransformer> selectTransformer(Path filePath) {

@@ -1,7 +1,9 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
+import be.witspirit.rfidtrialprocess.file.FileConverter;
+import be.witspirit.rfidtrialprocess.file.FileNameMappers;
+import be.witspirit.rfidtrialprocess.file.FileProcessor;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidScan;
 import be.witspirit.rfidtrialprocess.tos.TosInstruction;
 import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
 import be.witspirit.rfidtrialprocess.tos.TosTransformer;
@@ -10,13 +12,16 @@ import org.junit.Test;
 
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Small integration test that will convert the sample RFID scan csv to various TosInstruction formats
  */
 public class TransformationTest {
-    private static final String INPUT_FILE = "src/test/resources/phidata/BRMLOG_D2015-22-06_T104026.csv";
+    private static final String INPUT_DIR = "src/test/resources/phidata";
+    private static final String INPUT_FILE = "BRMLOG_D2015-22-06_T104026.csv";
 
     private static final String ARRIVAL_FILE = "build/arrivals.txt";
     private static final String VPC_DONE_FILE = "build/washes.txt";
@@ -38,14 +43,21 @@ public class TransformationTest {
     }
 
     private void process(String inputFileName, String instructionPattern, String outputFileName) {
-        try {
-            List<PhiDataRfidScan> scans = new PhiDataRfidInputParser().readFrom(new FileReader(inputFileName));
-            List<TosInstruction> instructions = new TosTransformer(instructionPattern).scansToTos(scans, RfidProcessor::phiDataVinExtractor);
-            new TosOutputProducer().write(instructions, new FileWriter(outputFileName));
-        } catch (Exception e) {
-            throw new RuntimeException("Conversion failed", e);
-        }
+        new FileProcessor(Paths.get(INPUT_DIR))
+                .register(new FileConverter<>(
+                        this::readPhiDataScan,
+                        FileNameMappers.fixed(Paths.get(outputFileName)),
+                        (vins, fileWriter) -> write(instructionPattern, vins, fileWriter)
+                )).file(inputFileName);
     }
 
+    private Stream<String> readPhiDataScan(FileReader fileReader) {
+        return new PhiDataRfidInputParser().parse(fileReader);
+    }
+
+    private void write(String instructionPattern, Stream<String> vins, FileWriter fileWriter) {
+        List<TosInstruction> instructions = new TosTransformer(instructionPattern).vinsToTos(vins);
+        new TosOutputProducer().write(instructions, fileWriter);
+    }
 
 }

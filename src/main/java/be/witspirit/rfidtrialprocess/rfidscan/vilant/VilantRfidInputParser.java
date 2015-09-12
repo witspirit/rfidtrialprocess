@@ -1,6 +1,7 @@
 package be.witspirit.rfidtrialprocess.rfidscan.vilant;
 
 import be.witspirit.rfidtrialprocess.exceptions.InputException;
+import be.witspirit.rfidtrialprocess.rfidscan.VinParser;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.csv.CSVFormat;
@@ -15,11 +16,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Reads the Input CSV
  */
-public class VilantRfidInputParser {
+public class VilantRfidInputParser implements VinParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(VilantRfidInputParser.class);
 
@@ -65,5 +67,10 @@ public class VilantRfidInputParser {
         } catch (DecoderException e) {
             throw new InputException("Failed to decode hex representation of the EPC Data", e);
         }
+    }
+
+    @Override
+    public Stream<String> parse(Reader reader) {
+        return readFrom(reader).stream().map(scan -> scan.getVin());
     }
 }

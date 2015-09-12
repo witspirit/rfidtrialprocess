@@ -23,8 +23,9 @@ public class FileProcessor {
         this.inputDir = inputDir;
     }
 
-    public void register(Consumer<Path> fileConsumer) {
+    public FileProcessor register(Consumer<Path> fileConsumer) {
         consumers.add(fileConsumer);
+        return this;
     }
 
     public void startWatch() {
@@ -75,7 +76,10 @@ public class FileProcessor {
         } catch (IOException e) {
             throw new RuntimeException("Failed to list files from input directory.");
         }
+    }
 
+    public void file(String fileName) {
+        process(inputDir.resolve(fileName));
     }
 
     private void process(Path filePath) {
