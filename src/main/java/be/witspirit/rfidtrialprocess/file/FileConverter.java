@@ -37,7 +37,10 @@ public class FileConverter<ParsedType> implements Consumer<Path> {
             ParsedType parsedResult = fileParser.apply(inputReader);
             outputProducer.accept(parsedResult, fileWriter);
 
-            // Could launch post-convert actions based on outputFilePath...
+            // Could launch post-convert actions based on input and outputFilePath...
+            // Consider moving processed file to processed directory
+            // Sending the output files by e-mail or FTP
+
         } catch (IOException e) {
             throw new RuntimeException("I/O issues prevented completion of the transformation of "+inputFilePath, e);
         }

@@ -1,9 +1,7 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
-import be.witspirit.rfidtrialprocess.file.PathFilters;
-import be.witspirit.rfidtrialprocess.output.tos.TosWriter;
-import be.witspirit.rfidtrialprocess.output.tos.TrialInstructions;
-import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
+import be.witspirit.rfidtrialprocess.file.FileProcessor;
+import be.witspirit.rfidtrialprocess.trial.Configurations;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -17,19 +15,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Unit test for the RfidProcessor
+ * Unit test for the RFID Processing infrastructure
  */
 public class RfidProcessorTest {
     private static final Logger LOG = LoggerFactory.getLogger(RfidProcessorTest.class);
 
     private static final Path rootDir = Paths.get("build", "processortest");
 
-    private RfidProcessor configureRfidProcessor(Path input, Path output) {
-        RfidProcessor processor = new RfidProcessor(input, output);
-        processor.handle(PathFilters.fileNameStartsWith("ARR"), new PhiDataRfidInputParser(), new TosWriter(TrialInstructions.ARRIVAL));
-        processor.handle(PathFilters.fileNameStartsWith("WASH"), new PhiDataRfidInputParser(), new TosWriter(TrialInstructions.VPC_DONE));
-        processor.handle(PathFilters.fileNameStartsWith("DEP"), new PhiDataRfidInputParser(), new TosWriter(TrialInstructions.DEPARTURE));
-        return processor;
+    private FileProcessor configureRfidProcessor(Path input, Path output) {
+        return Configurations.phiDataTest(input, output);
     }
 
     @Test
@@ -43,9 +37,9 @@ public class RfidProcessorTest {
         deleteDir(output);
         output = Files.createDirectories(output);
 
-        RfidProcessor processor = configureRfidProcessor(input, output);
+        FileProcessor processor = configureRfidProcessor(input, output);
 
-        Future<?> listener = Executors.newSingleThreadExecutor().submit(processor::listenForEvents);
+        Future<?> listener = Executors.newSingleThreadExecutor().submit(processor::startWatch);
         LOG.debug("Submitted listenForEvents");
 
         Thread.sleep(5000); // Give the other thread some time to kick in
@@ -108,9 +102,9 @@ public class RfidProcessorTest {
         Files.copy(rfidSample, input.resolve("DEP_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("Unhandled_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
 
-        RfidProcessor processor = configureRfidProcessor(input, output);
+        FileProcessor processor = configureRfidProcessor(input, output);
 
-        processor.processInputDir();
+        processor.scan();
 
         // Check output files
         Assert.assertTrue(Files.exists(output.resolve("ARR_sample.csv_INSTRUCTIONS.txt")));
