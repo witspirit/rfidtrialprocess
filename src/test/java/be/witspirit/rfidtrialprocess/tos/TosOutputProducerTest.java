@@ -1,4 +1,4 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.tos;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class TosOutputProducerTest {
         TosOutputProducer producer = new TosOutputProducer();
         producer.write(instructions, destination);
 
-        boolean filesEqual = FileUtils.contentEquals(new File("build/sample.txt"), new File("src/test/resources/expectedOutputSample.txt"));
+        boolean filesEqual = FileUtils.contentEquals(new File("build/sample.txt"), new File("src/test/resources/tos/expectedOutputSample.txt"));
         assertThat("File contents are not equal", filesEqual);
     }
 
@@ -45,7 +45,7 @@ public class TosOutputProducerTest {
         TosOutputProducer producer = new TosOutputProducer();
         producer.write(instructions, destination);
 
-        boolean filesEqual = FileUtils.contentEquals(new File("build/trialInstructions.txt"), new File("src/test/resources/expectedTrialInstructions.txt"));
+        boolean filesEqual = FileUtils.contentEquals(new File("build/trialInstructions.txt"), new File("src/test/resources/tos/expectedTrialInstructions.txt"));
         assertThat("File contents are not equal", filesEqual);
     }
 

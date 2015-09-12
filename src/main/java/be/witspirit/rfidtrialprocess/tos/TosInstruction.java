@@ -1,4 +1,4 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.tos;
 
 /**
  * Representation of a TOS Instruction

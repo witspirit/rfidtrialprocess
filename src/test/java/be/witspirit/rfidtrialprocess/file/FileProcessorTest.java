@@ -42,7 +42,7 @@ public class FileProcessorTest {
         Thread.sleep(5000); // Give the other thread some time to kick in
 
         // Copy some files to the input directory...
-        Path rfidSample = Paths.get("src", "test", "resources", "BRMLog_D2015-22-06_T104026.csv");
+        Path rfidSample = Paths.get("src", "test", "resources", "phidata/BRMLog_D2015-22-06_T104026.csv");
 
         Path inputPath1 = input.resolve("ARR_sample.csv");
         Path inputPath2 = input.resolve("WASH_sample.csv");
@@ -99,7 +99,7 @@ public class FileProcessorTest {
     public void directoryScan() throws IOException {
         Path input = Files.createDirectories(rootDir.resolve("scanInput"));
 
-        Path rfidSample = Paths.get("src", "test", "resources", "BRMLog_D2015-22-06_T104026.csv");
+        Path rfidSample = Paths.get("src", "test", "resources", "phidata/BRMLog_D2015-22-06_T104026.csv");
         Path inputPath1 = input.resolve("ARR_sample.csv");
         Path inputPath2 = input.resolve("WASH_sample.csv");
         Path inputPath3 = input.resolve("DEP_sample.csv");

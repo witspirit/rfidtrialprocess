@@ -1,7 +1,7 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.rfidscan.phidata;
 
-import be.witspirit.rfidtrialprocess.tools.RfidOutputGenerator;
-import be.witspirit.rfidtrialprocess.tools.ScanGenerator;
+import be.witspirit.rfidtrialprocess.tools.phidata.RfidOutputGenerator;
+import be.witspirit.rfidtrialprocess.tools.phidata.ScanGenerator;
 import org.junit.Test;
 
 import java.io.FileWriter;

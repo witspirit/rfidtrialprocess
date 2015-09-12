@@ -1,4 +1,4 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.exceptions;
 
 /**
  * Exception to mark input issues

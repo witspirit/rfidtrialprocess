@@ -1,4 +1,4 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.rfidscan.phidata;
 
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class RfidInputParserTest {
     public void readSample() throws IOException {
         RfidInputParser parser = new RfidInputParser();
         try (
-                InputStream sampleStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("BRMLOG_D2015-22-06_T104026.csv");
+                InputStream sampleStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("phidata/BRMLog_D2015-22-06_T104026.csv");
                 Reader sampleReader = new InputStreamReader(sampleStream);
         ) {
             List<RfidScan> scans = parser.readFrom(sampleReader);

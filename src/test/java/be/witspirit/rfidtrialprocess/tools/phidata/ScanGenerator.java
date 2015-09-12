@@ -1,6 +1,6 @@
-package be.witspirit.rfidtrialprocess.tools;
+package be.witspirit.rfidtrialprocess.tools.phidata;
 
-import be.witspirit.rfidtrialprocess.RfidScan;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;

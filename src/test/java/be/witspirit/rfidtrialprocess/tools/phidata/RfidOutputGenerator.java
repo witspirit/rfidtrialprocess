@@ -1,7 +1,7 @@
-package be.witspirit.rfidtrialprocess.tools;
+package be.witspirit.rfidtrialprocess.tools.phidata;
 
-import be.witspirit.rfidtrialprocess.InputException;
-import be.witspirit.rfidtrialprocess.RfidScan;
+import be.witspirit.rfidtrialprocess.exceptions.InputException;
+import be.witspirit.rfidtrialprocess.rfidscan.phidata.RfidScan;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;

@@ -1,4 +1,6 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.tos;
+
+import be.witspirit.rfidtrialprocess.exceptions.OutputException;
 
 import java.io.IOException;
 import java.io.Writer;

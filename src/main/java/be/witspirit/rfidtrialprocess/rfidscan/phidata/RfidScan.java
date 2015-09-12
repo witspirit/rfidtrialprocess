@@ -1,4 +1,4 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.rfidscan.phidata;
 
 import org.apache.commons.codec.binary.Hex;
 

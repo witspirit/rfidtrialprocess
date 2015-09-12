@@ -1,5 +1,6 @@
-package be.witspirit.rfidtrialprocess;
+package be.witspirit.rfidtrialprocess.trial.phidata;
 
+import be.witspirit.rfidtrialprocess.tos.TrialInstructions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class RfidProcessorTest {
         Thread.sleep(5000); // Give the other thread some time to kick in
 
         // Copy some files to the input directory...
-        Path rfidSample = Paths.get("src", "test", "resources", "BRMLog_D2015-22-06_T104026.csv");
+        Path rfidSample = Paths.get("src", "test", "resources", "phidata/BRMLog_D2015-22-06_T104026.csv");
         Files.copy(rfidSample, input.resolve("ARR_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("WASH_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
 
@@ -93,7 +94,7 @@ public class RfidProcessorTest {
         output = Files.createDirectories(output);
 
         // Path rfidSample = Paths.get("src", "test", "resources", "BRMLog_D2015-22-06_T104026.csv");
-        Path rfidSample = Paths.get("src", "test", "resources", "mazdaLikeSample.csv");
+        Path rfidSample = Paths.get("src", "test", "resources", "phidata/mazdaLikeSample.csv");
         Files.copy(rfidSample, input.resolve("ARR_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("WASH_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
         Files.copy(rfidSample, input.resolve("DEP_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
