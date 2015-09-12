@@ -1,4 +1,4 @@
-package be.witspirit.rfidtrialprocess.tos;
+package be.witspirit.rfidtrialprocess.output.tos;
 
 /**
  * Defines the TOS Patterns for the various Trial scenario's we have identified

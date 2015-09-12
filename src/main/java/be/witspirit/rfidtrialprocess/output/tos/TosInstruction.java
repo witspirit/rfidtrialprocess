@@ -1,4 +1,6 @@
-package be.witspirit.rfidtrialprocess.tos;
+package be.witspirit.rfidtrialprocess.output.tos;
+
+import java.util.function.Function;
 
 /**
  * Representation of a TOS Instruction
@@ -19,5 +21,9 @@ public class TosInstruction {
     @Override
     public String toString() {
         return output();
+    }
+
+    public static Function<String, TosInstruction> withPattern(String pattern) {
+        return vin -> new TosInstruction(pattern, vin);
     }
 }

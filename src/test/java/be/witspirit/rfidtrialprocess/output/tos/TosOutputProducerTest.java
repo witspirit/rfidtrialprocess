@@ -1,4 +1,4 @@
-package be.witspirit.rfidtrialprocess.tos;
+package be.witspirit.rfidtrialprocess.output.tos;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;

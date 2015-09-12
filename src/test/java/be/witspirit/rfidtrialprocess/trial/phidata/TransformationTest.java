@@ -3,17 +3,13 @@ package be.witspirit.rfidtrialprocess.trial.phidata;
 import be.witspirit.rfidtrialprocess.file.FileConverter;
 import be.witspirit.rfidtrialprocess.file.FileNameMappers;
 import be.witspirit.rfidtrialprocess.file.FileProcessor;
+import be.witspirit.rfidtrialprocess.output.tos.TosWriter;
+import be.witspirit.rfidtrialprocess.output.tos.TrialInstructions;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
-import be.witspirit.rfidtrialprocess.tos.TosInstruction;
-import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
-import be.witspirit.rfidtrialprocess.tos.TosTransformer;
-import be.witspirit.rfidtrialprocess.tos.TrialInstructions;
 import org.junit.Test;
 
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -47,17 +43,12 @@ public class TransformationTest {
                 .register(new FileConverter<>(
                         this::readPhiDataScan,
                         FileNameMappers.fixed(Paths.get(outputFileName)),
-                        (vins, fileWriter) -> write(instructionPattern, vins, fileWriter)
+                        new TosWriter(instructionPattern)::write
                 )).file(inputFileName);
     }
 
     private Stream<String> readPhiDataScan(FileReader fileReader) {
         return new PhiDataRfidInputParser().parse(fileReader);
-    }
-
-    private void write(String instructionPattern, Stream<String> vins, FileWriter fileWriter) {
-        List<TosInstruction> instructions = new TosTransformer(instructionPattern).vinsToTos(vins);
-        new TosOutputProducer().write(instructions, fileWriter);
     }
 
 }

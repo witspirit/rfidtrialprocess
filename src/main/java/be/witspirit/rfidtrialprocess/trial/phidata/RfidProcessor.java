@@ -3,10 +3,9 @@ package be.witspirit.rfidtrialprocess.trial.phidata;
 import be.witspirit.rfidtrialprocess.file.FileConverter;
 import be.witspirit.rfidtrialprocess.file.FileNameMappers;
 import be.witspirit.rfidtrialprocess.file.FileProcessor;
+import be.witspirit.rfidtrialprocess.output.VinWriter;
 import be.witspirit.rfidtrialprocess.rfidscan.VinParser;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
-import be.witspirit.rfidtrialprocess.tos.TosOutputProducer;
-import be.witspirit.rfidtrialprocess.tos.TosTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,6 @@ import java.util.function.Predicate;
 public class RfidProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(RfidProcessor.class);
 
-    private final Path inputDir;
     private final Path outputDir;
 
     private List<HandlerRegistration> handlers = new ArrayList<>();
@@ -32,7 +30,6 @@ public class RfidProcessor {
     private VinParser vinParser;
 
     public RfidProcessor(Path inputDir, Path outputDir) {
-        this.inputDir = inputDir;
         this.outputDir = outputDir;
 
         this.fileProcessor = new FileProcessor(inputDir);
@@ -41,8 +38,8 @@ public class RfidProcessor {
         this.vinParser = new PhiDataRfidInputParser();
     }
 
-    public void handle(Predicate<String> fileNameFilter, TosTransformer tosTransformer) {
-        handlers.add(new HandlerRegistration(fileNameFilter, tosTransformer));
+    public void handle(Predicate<String> fileNameFilter, VinWriter vinWriter) {
+        handlers.add(new HandlerRegistration(fileNameFilter, vinWriter));
     }
 
     public void listenForEvents() {
@@ -60,19 +57,19 @@ public class RfidProcessor {
         selectTransformer(fileName).ifPresent(transformer -> produceOutput(filePath, transformer));
     }
 
-    private void produceOutput(Path filePath, TosTransformer transformer) {
+    private void produceOutput(Path filePath, VinWriter vinWriter) {
         new FileConverter<>(
                 vinParser::parse,
                 FileNameMappers.toDir(outputDir).andThen(FileNameMappers.suffix("_INSTRUCTIONS.txt")),
-                (vins, fileWriter) -> new TosOutputProducer().write(transformer.vinsToTos(vins), fileWriter)
+                vinWriter::write
                 ).accept(filePath);
     }
 
-    private Optional<TosTransformer> selectTransformer(Path filePath) {
+    private Optional<VinWriter> selectTransformer(Path filePath) {
         for (HandlerRegistration handler : handlers) {
             if (handler.fileNameFilter.test(filePath.toString())) {
                 LOG.debug("Found handler for "+filePath);
-                return Optional.of(handler.tosTransformer);
+                return Optional.of(handler.vinWriter);
             }
         }
         LOG.debug("No handler found for "+filePath);
@@ -82,11 +79,11 @@ public class RfidProcessor {
 
     private static class HandlerRegistration {
         private Predicate<String> fileNameFilter;
-        private TosTransformer tosTransformer;
+        private VinWriter vinWriter;
 
-        public HandlerRegistration(Predicate<String> fileNameFilter, TosTransformer tosTransformer) {
+        public HandlerRegistration(Predicate<String> fileNameFilter, VinWriter vinWriter) {
             this.fileNameFilter = fileNameFilter;
-            this.tosTransformer = tosTransformer;
+            this.vinWriter = vinWriter;
         }
     }
 }

@@ -1,7 +1,7 @@
 package be.witspirit.rfidtrialprocess.trial.phidata;
 
-import be.witspirit.rfidtrialprocess.tos.TosTransformer;
-import be.witspirit.rfidtrialprocess.tos.TrialInstructions;
+import be.witspirit.rfidtrialprocess.output.tos.TosWriter;
+import be.witspirit.rfidtrialprocess.output.tos.TrialInstructions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ public class RfidProcessorTest {
         output = Files.createDirectories(output);
 
         RfidProcessor processor = new RfidProcessor(input, output);
-        processor.handle(fileName -> fileName.startsWith("ARR"), new TosTransformer(TrialInstructions.ARRIVAL));
-        processor.handle(fileName -> fileName.startsWith("WASH"), new TosTransformer(TrialInstructions.VPC_DONE));
-        processor.handle(fileName -> fileName.startsWith("DEP"), new TosTransformer(TrialInstructions.DEPARTURE));
+        processor.handle(fileName -> fileName.startsWith("ARR"), new TosWriter(TrialInstructions.ARRIVAL));
+        processor.handle(fileName -> fileName.startsWith("WASH"), new TosWriter(TrialInstructions.VPC_DONE));
+        processor.handle(fileName -> fileName.startsWith("DEP"), new TosWriter(TrialInstructions.DEPARTURE));
 
         Future<?> listener = Executors.newSingleThreadExecutor().submit(processor::listenForEvents);
         LOG.debug("Submitted listenForEvents");
@@ -102,9 +102,9 @@ public class RfidProcessorTest {
         Files.copy(rfidSample, input.resolve("Unhandled_sample.csv"), StandardCopyOption.REPLACE_EXISTING);
 
         RfidProcessor processor = new RfidProcessor(input, output);
-        processor.handle(fileName -> fileName.startsWith("ARR"), new TosTransformer(TrialInstructions.ARRIVAL));
-        processor.handle(fileName -> fileName.startsWith("WASH"), new TosTransformer(TrialInstructions.VPC_DONE));
-        processor.handle(fileName -> fileName.startsWith("DEP"), new TosTransformer(TrialInstructions.DEPARTURE));
+        processor.handle(fileName -> fileName.startsWith("ARR"), new TosWriter(TrialInstructions.ARRIVAL));
+        processor.handle(fileName -> fileName.startsWith("WASH"), new TosWriter(TrialInstructions.VPC_DONE));
+        processor.handle(fileName -> fileName.startsWith("DEP"), new TosWriter(TrialInstructions.DEPARTURE));
 
         processor.processInputDir();
 
