@@ -7,6 +7,7 @@ import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
 import be.witspirit.rfidtrialprocess.rfidscan.vilant.VilantRfidInputParser;
 
 import java.nio.file.Path;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -22,16 +23,17 @@ public class Configurations {
         return common(input, output, processed, new VilantRfidInputParser());
     }
 
-    public static FileProcessor vilantTrial(Path input, Path output, Path processed) {
-        return common(input, output, processed, new VilantRfidInputParser());
+    public static FileProcessor vilantTrial(Path input, Path output, Path processed, BiConsumer<Path, Path>... postProcessors) {
+        return common(input, output, processed, new VilantRfidInputParser(), postProcessors);
     }
 
-    public static FileProcessor common(Path input, Path output, Path processed, VinParser vinParser) {
+    public static FileProcessor common(Path input, Path output, Path processed, VinParser vinParser, BiConsumer<Path, Path>... postProcessors) {
         FileProcessor processor = new FileProcessor(input);
         ProcessorFactory rfidProcessor = new ProcessorFactory()
                 .setNameMapper(FileNameMappers.toDir(output).andThen(FileNameMappers.suffix("_INSTRUCTIONS.txt")))
                 .setParser(vinParser)
-                .setPostProcessors(new FileMover(processed));
+                .addPostProcessors(new FileMover(processed))
+                .addPostProcessors(postProcessors);
 
         processor.register(handler("ARR", rfidProcessor.forIntruction(TrialInstructions.ARRIVAL)));
         processor.register(handler("WASH", rfidProcessor.forIntruction(TrialInstructions.VPC_DONE)));

@@ -12,6 +12,6 @@ gradle-app.setting
 *.iml
 
 # Private only files, containing local configuration
-test.private.properties
+*.private.properties
 
 

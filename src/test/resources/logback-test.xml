@@ -8,9 +8,10 @@
         </encoder>
     </appender>
 
+    <logger name="be.witspirit" level="DEBUG"/>
     <logger name="be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser" level="INFO"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

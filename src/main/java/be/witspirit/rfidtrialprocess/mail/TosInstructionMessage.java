@@ -34,7 +34,7 @@ public class TosInstructionMessage implements MailMessage {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
             message.setSubject("RFID Based TOS Instructions Available");
 
-            String messageContent = "Hi, \n\nPlease find in attachment a new TOS instructions file, based on detected RFIDs.\n\nKind regards, \n\n\tThe RFID trial team\n";
+            String messageContent = "Hi, \n\nPlease find in attachment a new TOS instructions file, based on detected RFIDs.\n\nKind regards, \n\n\tThe RFID trial team\n\n\n\n";
             // message.setText(messageContent); // Only for simple messages this convenience method can be used. For multi-parts, you have to wrap it
 
             MimeBodyPart text = new MimeBodyPart();

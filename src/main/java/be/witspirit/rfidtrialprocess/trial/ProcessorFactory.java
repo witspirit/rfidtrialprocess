@@ -7,6 +7,9 @@ import be.witspirit.rfidtrialprocess.rfidscan.VinParser;
 import be.witspirit.rfidtrialprocess.rfidscan.vilant.VilantRfidInputParser;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -17,7 +20,7 @@ import java.util.stream.Stream;
 public class ProcessorFactory {
     private VinParser parser = new VilantRfidInputParser();
     private Function<Path, Path> nameMapper = FileNameMappers.suffix("_INSTRUCTIONS.csv");
-    private BiConsumer<Path, Path>[] postProcessors = new BiConsumer[0];
+    private List<BiConsumer<Path, Path>> postProcessors = new ArrayList<>();
 
     public VinParser getParser() {
         return parser;
@@ -37,16 +40,16 @@ public class ProcessorFactory {
         return this;
     }
 
-    public BiConsumer<Path, Path>[] getPostProcessors() {
+    public List<BiConsumer<Path, Path>> getPostProcessors() {
         return postProcessors;
     }
 
-    public ProcessorFactory setPostProcessors(BiConsumer<Path, Path>... postProcessors) {
-        this.postProcessors = postProcessors;
+    public ProcessorFactory addPostProcessors(BiConsumer<Path, Path>... postProcessors) {
+        this.postProcessors.addAll(Arrays.asList(postProcessors));
         return this;
     }
 
     public FileConverter<Stream<String>> forIntruction(String tosPattern) {
-        return new FileConverter<>(parser::parse, nameMapper, new TosWriter(tosPattern)::write).addPostProcessor(postProcessors);
+        return new FileConverter<>(parser::parse, nameMapper, new TosWriter(tosPattern)::write).addPostProcessor(postProcessors.toArray(new BiConsumer[postProcessors.size()]));
     }
 }
