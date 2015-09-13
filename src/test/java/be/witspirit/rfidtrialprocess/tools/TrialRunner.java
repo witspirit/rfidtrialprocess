@@ -17,13 +17,13 @@ public class TrialRunner {
 
     private static final Path READ_DIR = Paths.get("D:\\Users\\bvanvlerken\\RealDocs\\RFID4VehicleLogistics\\Trial\\ScanFiles");
     private static final Path WRITE_DIR = Paths.get("D:\\Users\\bvanvlerken\\RealDocs\\RFID4VehicleLogistics\\Trial\\TosInstructions");
-    private static final Path PROCESSED_DIR = Paths.get("D:\\Users\\bvanvlerken\\RealDocs\\RFID4VehicleLogistics\\Trial\\ProcessedScanFiles"); //TODO
+    private static final Path PROCESSED_DIR = Paths.get("D:\\Users\\bvanvlerken\\RealDocs\\RFID4VehicleLogistics\\Trial\\ProcessedScanFiles");
 
     private FileProcessor processor;
 
     @Before
     public void configureProcessor() {
-        processor = Configurations.vilantTrial(READ_DIR, WRITE_DIR);
+        processor = Configurations.vilantTrial(READ_DIR, WRITE_DIR, PROCESSED_DIR);
     }
 
     @Test

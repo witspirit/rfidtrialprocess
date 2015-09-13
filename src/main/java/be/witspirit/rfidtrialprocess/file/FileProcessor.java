@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -42,6 +44,8 @@ public class FileProcessor {
                     return;
                 }
 
+                // We first collate all events for the same path, to avoid too many process triggers
+                Set<Path> modifiedPaths = new LinkedHashSet<>();
                 for (WatchEvent<?> event : watchKey.pollEvents()) {
                     WatchEvent.Kind<?> eventKind = event.kind();
 
@@ -51,12 +55,15 @@ public class FileProcessor {
                         // Proper event
                         WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                         Path filePath = pathEvent.context();
-                        LOG.info(eventKind+" event detected for "+filePath);
+                        LOG.info(eventKind + " event detected for " + filePath);
 
                         // We have to resolve to obtain a full path, which is in line with the behavior of the scan
-                        process(inputDir.resolve(filePath));
+                        modifiedPaths.add(inputDir.resolve(filePath));
                     }
                 }
+
+                // We only process the collated paths
+                modifiedPaths.forEach(this::process);
 
                 watchKey.reset();
             }
@@ -84,8 +91,12 @@ public class FileProcessor {
 
     private void process(Path filePath) {
         Path fileName = filePath.getFileName();
-        LOG.info("Processing "+fileName);
 
-        consumers.forEach(c -> c.accept(filePath));
+        if (Files.exists(filePath)) {
+            LOG.info("Processing " + fileName);
+            consumers.forEach(c -> c.accept(filePath));
+        } else {
+            LOG.debug(fileName+ " no longer exists. Ignoring...");
+        }
     }
 }

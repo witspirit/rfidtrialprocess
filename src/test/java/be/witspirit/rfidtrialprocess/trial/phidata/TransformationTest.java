@@ -8,9 +8,7 @@ import be.witspirit.rfidtrialprocess.output.tos.TrialInstructions;
 import be.witspirit.rfidtrialprocess.rfidscan.phidata.PhiDataRfidInputParser;
 import org.junit.Test;
 
-import java.io.FileReader;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 /**
  * Small integration test that will convert the sample RFID scan csv to various TosInstruction formats
@@ -41,14 +39,10 @@ public class TransformationTest {
     private void process(String inputFileName, String instructionPattern, String outputFileName) {
         new FileProcessor(Paths.get(INPUT_DIR))
                 .register(new FileConverter<>(
-                        this::readPhiDataScan,
+                        new PhiDataRfidInputParser()::parse,
                         FileNameMappers.fixed(Paths.get(outputFileName)),
                         new TosWriter(instructionPattern)::write
                 )).file(inputFileName);
-    }
-
-    private Stream<String> readPhiDataScan(FileReader fileReader) {
-        return new PhiDataRfidInputParser().parse(fileReader);
     }
 
 }

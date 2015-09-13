@@ -46,3 +46,9 @@ dependencies {
     testCompile 'org.springframework:spring-test'
 }
 
+test {
+    testLogging {
+        exceptionFormat "full"
+    }
+}
+

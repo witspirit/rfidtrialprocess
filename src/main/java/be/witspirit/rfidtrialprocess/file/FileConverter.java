@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -20,10 +23,17 @@ public class FileConverter<ParsedType> implements Consumer<Path> {
     private Function<Path, Path> fileNameMapper;
     private BiConsumer<ParsedType, FileWriter> outputProducer;
 
+    private List<BiConsumer<Path, Path>> postProcessors = new ArrayList<>();
+
     public FileConverter(Function<FileReader, ParsedType> fileParser, Function<Path, Path> fileNameMapper, BiConsumer<ParsedType, FileWriter> outputProducer) {
         this.fileParser = fileParser;
         this.fileNameMapper = fileNameMapper;
         this.outputProducer = outputProducer;
+    }
+
+    public FileConverter<ParsedType> addPostProcessor(BiConsumer<Path, Path>... postProcessors) {
+        this.postProcessors.addAll(Arrays.asList(postProcessors));
+        return this;
     }
 
     @Override
@@ -37,9 +47,7 @@ public class FileConverter<ParsedType> implements Consumer<Path> {
             ParsedType parsedResult = fileParser.apply(inputReader);
             outputProducer.accept(parsedResult, fileWriter);
 
-            // Could launch post-convert actions based on input and outputFilePath...
-            // Consider moving processed file to processed directory
-            // Sending the output files by e-mail or FTP
+            postProcessors.forEach(pp -> pp.accept(inputFilePath, outputFilePath));
 
         } catch (IOException e) {
             throw new RuntimeException("I/O issues prevented completion of the transformation of "+inputFilePath, e);
