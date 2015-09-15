@@ -59,7 +59,7 @@ public class VilantRfidInputParser implements VinParser {
             VilantRfidScan scan = new VilantRfidScan()
                     .setVin(vin)
                     .setEpcData(Hex.decodeHex(epcData.toCharArray()))
-                    .setTimestamp(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss")));
+                    .setTimestamp(LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
 
             LOG.debug(scan.toString());
 

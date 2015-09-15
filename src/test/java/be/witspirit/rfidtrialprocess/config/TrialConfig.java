@@ -1,7 +1,9 @@
 package be.witspirit.rfidtrialprocess.config;
 
+import be.witspirit.rfidtrialprocess.file.FileCopier;
 import be.witspirit.rfidtrialprocess.file.FileProcessor;
 import be.witspirit.rfidtrialprocess.mail.MailDeliveryPostProcessor;
+import be.witspirit.rfidtrialprocess.output.tos.TrialInstructions;
 import be.witspirit.rfidtrialprocess.trial.Configurations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
@@ -43,6 +45,11 @@ public class TrialConfig {
     }
 
     @Bean
+    public Path usbDir() {
+        return Paths.get(env.getProperty("usb.dir"));
+    }
+
+    @Bean
     public MailDeliveryPostProcessor primaryMail() {
         return new MailDeliveryPostProcessor(mailConfig.mailSender(), env.getProperty("mail.from"), env.getProperty("mail.primary.to"));
     }
@@ -53,7 +60,15 @@ public class TrialConfig {
     }
 
     @Bean
+    public FileCopier usbDrop() {
+        return new FileCopier(usbDir());
+    }
+
+    @Bean
     public FileProcessor processor() {
-        return Configurations.vilantTrial(inputDir(), outputDir(), processedDir(), primaryMail());
+        String trialInstruction = TrialInstructions.ARRIVAL;
+        // String trialInstruction = TrialInstructions.VPC_DONE;
+        // String trialInstruction = TrialInstructions.DEPARTURE;
+        return Configurations.vilantTrial(trialInstruction, inputDir(), outputDir(), processedDir(), primaryMail());
     }
 }

@@ -23,8 +23,16 @@ public class Configurations {
         return common(input, output, processed, new VilantRfidInputParser());
     }
 
-    public static FileProcessor vilantTrial(Path input, Path output, Path processed, BiConsumer<Path, Path>... postProcessors) {
-        return common(input, output, processed, new VilantRfidInputParser(), postProcessors);
+    public static FileProcessor vilantTrial(String trialInstruction, Path input, Path output, Path processed, BiConsumer<Path, Path>... postProcessors) {
+        FileProcessor processor = new FileProcessor(input);
+        ProcessorFactory rfidProcessor = new ProcessorFactory()
+                .setNameMapper(FileNameMappers.toDir(output).andThen(FileNameMappers.suffix("_INSTRUCTIONS.txt")))
+                .setParser(new VilantRfidInputParser())
+                .addPostProcessors(new FileMover(processed))
+                .addPostProcessors(postProcessors);
+
+        processor.register(rfidProcessor.forIntruction(trialInstruction));
+        return processor;
     }
 
     public static FileProcessor common(Path input, Path output, Path processed, VinParser vinParser, BiConsumer<Path, Path>... postProcessors) {
