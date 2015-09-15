@@ -47,10 +47,19 @@ public class FileConverter<ParsedType> implements Consumer<Path> {
             ParsedType parsedResult = fileParser.apply(inputReader);
             outputProducer.accept(parsedResult, fileWriter);
 
-            postProcessors.forEach(pp -> pp.accept(inputFilePath, outputFilePath));
+            postProcessors.forEach(pp -> runPostProcessor(pp, inputFilePath, outputFilePath));
 
         } catch (IOException e) {
             throw new RuntimeException("I/O issues prevented completion of the transformation of "+inputFilePath, e);
+        }
+    }
+
+    // Ensure the process does not fail because one of the post processors didn't run succesfully
+    private void runPostProcessor(BiConsumer<Path, Path> postProcessor, Path inputFilePath, Path outputFilePath) {
+        try {
+            postProcessor.accept(inputFilePath, outputFilePath);
+        } catch (Exception e) {
+            LOG.error("Failed to execute post processor "+postProcessor, e);
         }
     }
 
