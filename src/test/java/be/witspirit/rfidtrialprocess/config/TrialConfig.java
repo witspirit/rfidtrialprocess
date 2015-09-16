@@ -49,14 +49,8 @@ public class TrialConfig {
         return Paths.get(env.getProperty("usb.dir"));
     }
 
-    @Bean
-    public MailDeliveryPostProcessor primaryMail() {
-        return new MailDeliveryPostProcessor(mailConfig.mailSender(), env.getProperty("mail.from"), env.getProperty("mail.primary.to"));
-    }
-
-    @Bean
-    public MailDeliveryPostProcessor secondaryMail() {
-        return new MailDeliveryPostProcessor(mailConfig.mailSender(), env.getProperty("mail.from"), env.getProperty("mail.secondary.to"));
+    private MailDeliveryPostProcessor mail(int nr) {
+        return new MailDeliveryPostProcessor(mailConfig.mailSender(), env.getProperty("mail.from"), env.getProperty("mail."+nr+".to"));
     }
 
     @Bean
@@ -69,6 +63,6 @@ public class TrialConfig {
         String trialInstruction = TrialInstructions.ARRIVAL;
         // String trialInstruction = TrialInstructions.VPC_DONE;
         // String trialInstruction = TrialInstructions.DEPARTURE;
-        return Configurations.vilantTrial(trialInstruction, inputDir(), outputDir(), processedDir(), primaryMail());
+        return Configurations.vilantTrial(trialInstruction, inputDir(), outputDir(), processedDir(), mail(1), mail(2), mail(3), mail(4));
     }
 }
